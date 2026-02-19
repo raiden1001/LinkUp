@@ -1,0 +1,45 @@
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- IDE ----
+.idea/
+*.iml
+
+# ---- Gradle / Kotlin ----
+.gradle/
+**/.gradle/
+**/.kotlin/
+**/build/
+**/out/
+caches/
+daemon/
+kotlin-profile/
+wrapper/
+.tmp/
+
+# ---- Android ----
+local.properties
+.cxx/
+.externalNativeBuild/
+captures/
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- Env / Secrets ----
+.env
+.env.*
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+
+# ---- Temp / cache ----
+*.tmp
+*.temp
+*.swp
+*.swo
+*.orig

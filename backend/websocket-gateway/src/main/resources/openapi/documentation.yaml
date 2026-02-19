@@ -1,0 +1,33 @@
+openapi: 3.0.3
+info:
+  title: LinkUp WebSocket Gateway API
+  version: 1.0.0
+  description: Realtime websocket gateway and subscription protocol.
+servers:
+  - url: http://localhost:8083
+tags:
+  - name: Realtime
+paths:
+  /ws:
+    get:
+      tags: [Realtime]
+      summary: WebSocket endpoint
+      description: |
+        Upgrade this endpoint to WebSocket with Bearer JWT auth.
+        Client frames:
+        - Subscribe { channelId }
+        - Unsubscribe { channelId }
+        Server frames:
+        - IncomingMessage { message }
+        - Error { reason }
+      security:
+        - bearerAuth: []
+      responses:
+        '101':
+          description: Switching Protocols
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

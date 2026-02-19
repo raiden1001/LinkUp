@@ -1,0 +1,179 @@
+openapi: 3.0.3
+info:
+  title: LinkUp Chat Service API
+  version: 1.0.0
+  description: Conversation and message APIs.
+servers:
+  - url: http://localhost:8082
+tags:
+  - name: Conversations
+  - name: Messages
+paths:
+  /conversations:
+    post:
+      tags: [Conversations]
+      summary: Create conversation
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConversationRequest'
+      responses:
+        '200':
+          description: Conversation created
+    get:
+      tags: [Conversations]
+      summary: List conversations for current user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Conversations list
+  /conversations/{id}:
+    get:
+      tags: [Conversations]
+      summary: Get conversation details
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Conversation details
+  /conversations/{id}/messages:
+    get:
+      tags: [Messages]
+      summary: List conversation messages
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Message list
+  /messages/send:
+    post:
+      tags: [Messages]
+      summary: Send encrypted message
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '200':
+          description: Message queued
+  /messages/{id}:
+    put:
+      tags: [Messages]
+      summary: Edit encrypted message payload
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMessageRequest'
+      responses:
+        '200':
+          description: Message updated
+  /messages/{id}/status:
+    post:
+      tags: [Messages]
+      summary: Update message status for current user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMessageStatusRequest'
+      responses:
+        '200':
+          description: Message status saved
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CreateConversationRequest:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [DIRECT, GROUP, CHANNEL]
+        title:
+          type: string
+          nullable: true
+        memberUserIds:
+          type: array
+          items:
+            type: string
+          nullable: true
+    Message:
+      type: object
+      required: [id, senderId, channelId, encryptedPayload, encryptedDataKey, timestamp]
+      properties:
+        id:
+          type: string
+        senderId:
+          type: string
+        channelId:
+          type: string
+        encryptedPayload:
+          type: string
+        encryptedDataKey:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+        type:
+          type: string
+          enum: [TEXT, IMAGE_URL, SYSTEM]
+    UpdateMessageRequest:
+      type: object
+      required: [encryptedPayload]
+      properties:
+        encryptedPayload:
+          type: string
+        encryptedDataKey:
+          type: string
+          nullable: true
+    UpdateMessageStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [SENT, DELIVERED, READ]

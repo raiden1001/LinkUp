@@ -1,0 +1,7 @@
+# Backend-wide local artifacts
+build/
+out/
+logs/
+*.log
+.env
+.env.*

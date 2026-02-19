@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: LinkUp Media Service API
+  version: 1.0.0
+  description: Media upload and download lifecycle APIs.
+servers:
+  - url: http://localhost:8084
+tags:
+  - name: Media
+paths:
+  /presign:
+    post:
+      tags: [Media]
+      summary: Generate presigned upload URL
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PresignRequest'
+      responses:
+        '200':
+          description: Presigned upload URL generated
+  /media/confirm:
+    post:
+      tags: [Media]
+      summary: Confirm uploaded media metadata
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmMediaRequest'
+      responses:
+        '200':
+          description: Media metadata saved
+  /media/{id}/download:
+    get:
+      tags: [Media]
+      summary: Generate presigned download URL
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Presigned download URL generated
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    PresignRequest:
+      type: object
+      required: [extension, contentType]
+      properties:
+        extension:
+          type: string
+        contentType:
+          type: string
+    ConfirmMediaRequest:
+      type: object
+      required: [messageId, objectName]
+      properties:
+        messageId:
+          type: string
+        objectName:
+          type: string
+        mimeType:
+          type: string
+          nullable: true
+        sizeBytes:
+          type: integer
+          format: int64
+          nullable: true

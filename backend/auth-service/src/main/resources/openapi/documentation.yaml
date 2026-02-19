@@ -1,0 +1,115 @@
+openapi: 3.0.3
+info:
+  title: LinkUp Auth Service API
+  version: 1.0.0
+  description: Login, identity, and key directory APIs.
+servers:
+  - url: http://localhost:8081
+tags:
+  - name: Auth
+  - name: Keys
+paths:
+  /login:
+    post:
+      tags: [Auth]
+      summary: Login with email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login success
+        '403':
+          description: Email domain forbidden
+  /me:
+    get:
+      tags: [Auth]
+      summary: Get current identity
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user info
+  /keys/me:
+    post:
+      tags: [Keys]
+      summary: Upsert authenticated user's public key
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertPublicKeyRequest'
+      responses:
+        '200':
+          description: Key upserted
+  /keys/{userId}:
+    get:
+      tags: [Keys]
+      summary: Get public key by user id
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Key found
+        '404':
+          description: Key not found
+  /users/{userId}/keys/active:
+    get:
+      tags: [Keys]
+      summary: Compatibility endpoint for active key lookup
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Active key found
+        '404':
+          description: Active key not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+          nullable: true
+        deviceId:
+          type: string
+          nullable: true
+    UpsertPublicKeyRequest:
+      type: object
+      required: [publicKeyBase64]
+      properties:
+        publicKeyBase64:
+          type: string
+        keyId:
+          type: string
+          nullable: true
+        algorithm:
+          type: string
+          nullable: true
