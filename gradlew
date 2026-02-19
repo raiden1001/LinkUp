@@ -67,6 +67,13 @@ APP_BASE_NAME=${0##*/}
 # Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
 APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && pwd )
 
+# Keep Gradle user home at the device-level default so caches and generated
+# wrapper/daemon artifacts are not created inside the project repository.
+if [ -z "$GRADLE_USER_HOME" ] ; then
+    GRADLE_USER_HOME="$HOME/.gradle"
+fi
+export GRADLE_USER_HOME
+
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD=maximum
 
